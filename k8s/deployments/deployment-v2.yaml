@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dataproc-flask-api-v2
+  labels:
+    app: dataproc-flask-api
+    version: v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dataproc-flask-api
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: dataproc-flask-api
+        version: v2
+    spec:
+      containers:
+        - name: api
+          image: YOUR_REGISTRY/dataproc-flask-api:v2
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5001
+          env:
+            - name: PORT
+              value: "5001"
+            - name: PROJECT_ID
+              value: "GOOGLE_APPLICATION_CREDENTIALS"
+            - name: REGION
+              value: "YOUR_REGION"
+            - name: CLUSTER_NAME
+              value: "YOUR_CLUSTER_NAME"
+            - name: BUCKET_NAME
+              value: "YOUR_BUCKET_NAME"
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: YOUR_GOOGLE_APPLICATION_CREDENTIALS_PATH
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5001
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5001
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          volumeMounts:
+            - name: gcp-sa
+              mountPath: /var/secrets/google
+              readOnly: true
+      volumes:
+        - name: gcp-sa
+          secret:
+            secretName: gcp-adc

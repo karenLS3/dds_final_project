@@ -1,0 +1,35 @@
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: dataproc-flask-api
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - demo-6231-gateway
+  http:
+    - match:
+        - headers:
+            x-app-user:
+              exact: qa_user
+          uri:
+            prefix: /results
+        - uri:
+            prefix: /create
+        - uri:
+            prefix: /spark
+        - uri:
+            prefix: /health
+      route:
+        - destination:
+            host: dataproc-flask-api
+            subset: v3
+          weight: 100
+    - match:
+        - uri:
+            prefix: /results
+      route:
+        - destination:
+            host: dataproc-flask-api
+            subset: v1
+          weight: 100

@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flight Data Analytics - Load Testing UI</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .header {
+        text-align: center;
+        color: white;
+        margin-bottom: 40px;
+      }
+
+      .header h1 {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      .header p {
+        font-size: 1.1em;
+        opacity: 0.9;
+      }
+
+      .functions-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        gap: 30px;
+        margin-bottom: 30px;
+      }
+
+      .function-card {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .function-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+      }
+
+      .function-title {
+        font-size: 1.5em;
+        color: #667eea;
+        margin-bottom: 15px;
+        font-weight: 600;
+      }
+
+      .function-description {
+        color: #555;
+        line-height: 1.6;
+        margin-bottom: 25px;
+        font-size: 0.95em;
+      }
+
+      .function-description strong {
+        color: #333;
+      }
+
+      .input-group {
+        margin-bottom: 20px;
+      }
+
+      .input-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #333;
+        font-weight: 500;
+        font-size: 0.95em;
+      }
+
+      .input-group input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1em;
+        transition: border-color 0.3s ease;
+      }
+
+      .input-group input:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      .button-group {
+        display: flex;
+        gap: 10px;
+      }
+
+      .btn {
+        flex: 1;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .btn-primary:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      .btn-primary:active:not(:disabled) {
+        transform: translateY(0);
+      }
+
+      .btn-primary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .btn-secondary {
+        background: #f0f0f0;
+        color: #333;
+      }
+
+      .btn-secondary:hover {
+        background: #e0e0e0;
+      }
+
+      .status-section {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        margin-top: 30px;
+      }
+
+      .status-title {
+        font-size: 1.3em;
+        color: #667eea;
+        margin-bottom: 20px;
+        font-weight: 600;
+      }
+
+      .status-item {
+        padding: 15px;
+        margin-bottom: 10px;
+        border-radius: 8px;
+        border-left: 4px solid #667eea;
+        background: #f8f9fa;
+      }
+
+      .status-item.success {
+        border-left-color: #28a745;
+        background: #d4edda;
+      }
+
+      .status-item.error {
+        border-left-color: #dc3545;
+        background: #f8d7da;
+      }
+
+      .status-item.pending {
+        border-left-color: #ffc107;
+        background: #fff3cd;
+      }
+
+      .status-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+
+      .status-function {
+        font-weight: 600;
+        color: #333;
+      }
+
+      .status-time {
+        font-size: 0.85em;
+        color: #666;
+      }
+
+      .status-details {
+        font-size: 0.9em;
+        color: #555;
+        margin-top: 5px;
+      }
+
+      .clear-btn {
+        margin-top: 15px;
+        padding: 10px 20px;
+        background: #6c757d;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.9em;
+      }
+
+      .clear-btn:hover {
+        background: #5a6268;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+
+      .stat-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+      }
+
+      .stat-value {
+        font-size: 2em;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+
+      .stat-label {
+        font-size: 0.9em;
+        opacity: 0.9;
+      }
+
+      @media (max-width: 768px) {
+        .functions-container {
+          grid-template-columns: 1fr;
+        }
+
+        .header h1 {
+          font-size: 2em;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>✈️ Flight Data Analytics</h1>
+        <p>Load Testing & Auto-Scaling Demonstration</p>
+      </div>
+
+      <div class="function-card" style="margin-bottom: 30px">
+        <div class="function-title">⚙️ API Configuration</div>
+        <div class="input-group">
+          <label for="apiUrl">Backend API Base URL:</label>
+          <input
+            type="text"
+            id="apiUrl"
+            value="http://localhost:8000"
+            placeholder="http://your-backend:8000"
+          />
+        </div>
+        <p
+          style="
+            font-size: 0.85em;
+            color: #666;
+            margin-top: -10px;
+            margin-bottom: 15px;
+          "
+        >
+          Update this to point to your containerized backend service
+        </p>
+      </div>
+
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-value" id="totalRequests">0</div>
+          <div class="stat-label">Total Requests Sent</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="successfulRequests">0</div>
+          <div class="stat-label">Successful Requests</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="failedRequests">0</div>
+          <div class="stat-label">Failed Requests</div>
+        </div>
+      </div>
+
+      <div class="functions-container">
+        <!-- Function 1: Co-occurring Airline Pairs -->
+        <div class="function-card">
+          <div class="function-title">
+            1. Co-occurring Airline Pairs by Origin
+          </div>
+          <div class="function-description">
+            <strong>Description:</strong> Performs MapReduce operations via
+            PySpark to calculate the number of co-occurring airlines with same
+            origin airports operating on the same date. Determines count of such
+            occurrences pairwise and returns results sorted by airline pairs
+            alphabetically with counts in descending order. <br /><br />
+            <strong>Use Case:</strong> Demonstrates distributed processing with
+            RDD operations, ideal for testing scalability under heavy MapReduce
+            workloads.
+          </div>
+          <div class="input-group">
+            <label for="requests1">Number of Requests:</label>
+            <input
+              type="number"
+              id="requests1"
+              min="1"
+              max="1000"
+              value="10"
+              placeholder="Enter number of requests"
+            />
+          </div>
+          <div class="button-group">
+            <button
+              class="btn btn-primary"
+              onclick="sendRequests('co-occurring', 'requests1')"
+            >
+              Send Requests
+            </button>
+            <button
+              class="btn btn-secondary"
+              onclick="clearStatus('co-occurring')"
+            >
+              Clear Status
+            </button>
+          </div>
+        </div>
+
+        <!-- Function 2: Most Canceled Flights -->
+        <div class="function-card">
+          <div class="function-title">2. Most Canceled Flights (Jan 2021)</div>
+          <div class="function-description">
+            <strong>Description:</strong> Analyzes flight data as a DataFrame to
+            find the airline that had the most canceled flights in January 2021.
+            Uses PySpark DataFrame operations including filtering, grouping, and
+            aggregation. <br /><br />
+            <strong>Use Case:</strong> Tests DataFrame query performance and
+            demonstrates how the system handles concurrent analytical queries.
+          </div>
+          <div class="input-group">
+            <label for="requests2">Number of Requests:</label>
+            <input
+              type="number"
+              id="requests2"
+              min="1"
+              max="1000"
+              value="10"
+              placeholder="Enter number of requests"
+            />
+          </div>
+          <div class="button-group">
+            <button
+              class="btn btn-primary"
+              onclick="sendRequests('most-canceled', 'requests2')"
+            >
+              Send Requests
+            </button>
+            <button
+              class="btn btn-secondary"
+              onclick="clearStatus('most-canceled')"
+            >
+              Clear Status
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="status-section">
+        <div class="status-title">Request Status & Results</div>
+        <div id="statusContainer"></div>
+        <button class="clear-btn" onclick="clearAllStatus()">
+          Clear All Status
+        </button>
+      </div>
+    </div>
+
+    <script>
+      // Configuration - Update these endpoints based on your backend service
+      // You can set this via URL parameter: ?apiUrl=http://your-backend:8000
+      const urlParams = new URLSearchParams(window.location.search);
+      let API_BASE_URL = urlParams.get("apiUrl") || "http://localhost:8000";
+      const ENDPOINTS = {
+        "co-occurring": "/api/co-occurring-pairs",
+        "most-canceled": "/api/most-canceled-flights",
+      };
+
+      // Update API URL from input field
+      function getApiBaseUrl() {
+        const input = document.getElementById("apiUrl");
+        return input ? input.value.trim() || API_BASE_URL : API_BASE_URL;
+      }
+
+      // Statistics tracking
+      let stats = {
+        total: 0,
+        successful: 0,
+        failed: 0,
+      };
+
+      // Function name mapping for display
+      const functionNames = {
+        "co-occurring": "Co-occurring Airline Pairs",
+        "most-canceled": "Most Canceled Flights",
+      };
+
+      /**
+       * Send multiple requests to a specific function endpoint
+       */
+      async function sendRequests(functionType, inputId) {
+        const input = document.getElementById(inputId);
+        const numRequests = parseInt(input.value);
+
+        if (!numRequests || numRequests < 1) {
+          alert("Please enter a valid number of requests (1-1000)");
+          return;
+        }
+
+        if (numRequests > 1000) {
+          alert("Maximum 1000 requests allowed at once");
+          return;
+        }
+
+        const endpoint = ENDPOINTS[functionType];
+        if (!endpoint) {
+          alert("Invalid function type");
+          return;
+        }
+
+        const functionName = functionNames[functionType];
+        const startTime = Date.now();
+
+        // Disable button during request
+        const button = input
+          .closest(".function-card")
+          .querySelector(".btn-primary");
+        button.disabled = true;
+        button.textContent = "Sending...";
+
+        // Add status message
+        addStatus(
+          functionType,
+          "pending",
+          `Sending ${numRequests} requests to ${functionName}...`,
+          null
+        );
+
+        // Send requests concurrently
+        const requests = [];
+        for (let i = 0; i < numRequests; i++) {
+          requests.push(
+            sendSingleRequest(endpoint, functionType, i + 1, numRequests)
+          );
+        }
+
+        try {
+          // Wait for all requests to complete
+          const results = await Promise.allSettled(requests);
+
+          const endTime = Date.now();
+          const duration = ((endTime - startTime) / 1000).toFixed(2);
+
+          // Count successes and failures
+          const successful = results.filter(
+            (r) => r.status === "fulfilled"
+          ).length;
+          const failed = results.filter((r) => r.status === "rejected").length;
+
+          // Update statistics
+          stats.total += numRequests;
+          stats.successful += successful;
+          stats.failed += failed;
+          updateStats();
+
+          // Update status message
+          updateLastStatus(
+            functionType,
+            successful === numRequests ? "success" : "error",
+            `${successful}/${numRequests} requests completed successfully in ${duration}s`,
+            failed > 0 ? `${failed} requests failed` : null
+          );
+        } catch (error) {
+          updateLastStatus(
+            functionType,
+            "error",
+            `Error sending requests: ${error.message}`,
+            null
+          );
+        } finally {
+          // Re-enable button
+          button.disabled = false;
+          button.textContent = "Send Requests";
+        }
+      }
+
+      /**
+       * Send a single HTTP request
+       */
+      async function sendSingleRequest(
+        endpoint,
+        functionType,
+        requestNum,
+        totalRequests
+      ) {
+        try {
+          const apiUrl = getApiBaseUrl();
+          const response = await fetch(`${apiUrl}${endpoint}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            // Add timeout for long-running requests
+            signal: AbortSignal.timeout(300000), // 5 minutes timeout
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+
+          const data = await response.json();
+          return data;
+        } catch (error) {
+          console.error(
+            `Request ${requestNum}/${totalRequests} failed:`,
+            error
+          );
+          throw error;
+        }
+      }
+
+      /**
+       * Add a new status message
+       */
+      function addStatus(functionType, status, message, details) {
+        const container = document.getElementById("statusContainer");
+        const statusItem = document.createElement("div");
+        statusItem.className = `status-item ${status}`;
+        statusItem.id = `status-${functionType}-${Date.now()}`;
+        statusItem.dataset.functionType = functionType;
+
+        const time = new Date().toLocaleTimeString();
+        statusItem.innerHTML = `
+                <div class="status-header">
+                    <span class="status-function">${
+                      functionNames[functionType]
+                    }</span>
+                    <span class="status-time">${time}</span>
+                </div>
+                <div class="status-details">${message}</div>
+                ${
+                  details
+                    ? `<div class="status-details" style="margin-top: 5px; color: #dc3545;">${details}</div>`
+                    : ""
+                }
+            `;
+
+        container.insertBefore(statusItem, container.firstChild);
+      }
+
+      /**
+       * Update the last status message for a function
+       */
+      function updateLastStatus(functionType, status, message, details) {
+        const container = document.getElementById("statusContainer");
+        const items = Array.from(container.children);
+        const lastItem = items.find(
+          (item) => item.dataset.functionType === functionType
+        );
+
+        if (lastItem) {
+          lastItem.className = `status-item ${status}`;
+          const detailsDiv = lastItem.querySelector(".status-details");
+          if (detailsDiv) {
+            detailsDiv.textContent = message;
+          }
+
+          if (details) {
+            let errorDiv = lastItem.querySelector(".status-details:last-child");
+            if (!errorDiv || !errorDiv.style.color) {
+              errorDiv = document.createElement("div");
+              errorDiv.className = "status-details";
+              errorDiv.style.marginTop = "5px";
+              errorDiv.style.color = "#dc3545";
+              lastItem.appendChild(errorDiv);
+            }
+            errorDiv.textContent = details;
+          }
+        }
+      }
+
+      /**
+       * Clear status for a specific function
+       */
+      function clearStatus(functionType) {
+        const container = document.getElementById("statusContainer");
+        const items = Array.from(container.children);
+        items.forEach((item) => {
+          if (item.dataset.functionType === functionType) {
+            item.remove();
+          }
+        });
+      }
+
+      /**
+       * Clear all status messages
+       */
+      function clearAllStatus() {
+        document.getElementById("statusContainer").innerHTML = "";
+      }
+
+      /**
+       * Update statistics display
+       */
+      function updateStats() {
+        document.getElementById("totalRequests").textContent = stats.total;
+        document.getElementById("successfulRequests").textContent =
+          stats.successful;
+        document.getElementById("failedRequests").textContent = stats.failed;
+      }
+
+      // Initialize API URL from URL parameters
+      window.addEventListener("DOMContentLoaded", function () {
+        const apiUrlInput = document.getElementById("apiUrl");
+        if (apiUrlInput && urlParams.get("apiUrl")) {
+          apiUrlInput.value = urlParams.get("apiUrl");
+        }
+      });
+
+      // Allow Enter key to trigger send
+      document
+        .getElementById("requests1")
+        .addEventListener("keypress", function (e) {
+          if (e.key === "Enter") {
+            sendRequests("co-occurring", "requests1");
+          }
+        });
+
+      document
+        .getElementById("requests2")
+        .addEventListener("keypress", function (e) {
+          if (e.key === "Enter") {
+            sendRequests("most-canceled", "requests2");
+          }
+        });
+    </script>
+  </body>
+</html>

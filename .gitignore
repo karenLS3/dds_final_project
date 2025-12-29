@@ -1,0 +1,64 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# packaging / build
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# testing / coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.mypy_cache/
+.ruff_cache/
+
+# notebooks
+.ipynb_checkpoints/
+
+# logs
+*.log
+
+# --- VS Code ---
+.vscode/*
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# --- OS junk ---
+.DS_Store
+Thumbs.db
+
+# --- Docker ---
+*.tar
+*.tgz
+
+# --- Secrets / credentials (IMPORTANT) ---
+.env
+.env.*
+*.pem
+*.p12
+*.key
+*.key.json
+*service-account*.json
+**/application_default_credentials.json
+
+# GCP local config (don’t commit)
+.gcloud/
+**/.config/gcloud/
+
+# Kubernetes secrets manifests (if you keep them)
+k8s/**/secret*.yaml
+k8s/**/secrets*.yaml
